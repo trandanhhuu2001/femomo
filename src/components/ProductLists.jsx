@@ -1,21 +1,28 @@
 import { Button, Card, Flex, Image, InputNumber, Modal } from "antd";
 import productData from "../product";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ProductContext } from "../context/ProductProvider";
 
 const { Meta } = Card;
 
-function ProductLists() {
-  const [visible, setVisible] = useState(false);
-  const [quantity, setQuantity] = useState(1);
-  const formatCurrency = (amount) => {
+const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
-  const showModal = () => {
+  
+function ProductLists() {
+  const { addProduct } = useContext(ProductContext);
+  const [visible, setVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+
+
+  const showModal = (product) => {
+    setSelectedProduct(product);
     setVisible(true);
   };
 
   const handleOk = () => {
-    console.log("Clicked OK");
+    addProduct({ ...selectedProduct, quantity });
     setVisible(false);
     // Xử lý logic khi người dùng ấn OK
   };
@@ -35,7 +42,7 @@ function ProductLists() {
           <Image src={product.picture} style={{ width: "80px" }} />
           <Flex horizontal align="center" justify="center" gap="large" style={{marginTop: "20px"}}>
             <Meta title={product.name} />
-            <Button onClick={showModal}>Mua | {formatCurrency(product.price)}</Button>
+            <Button onClick={() => showModal(product)}>Mua | {formatCurrency(product.price)}</Button>
           </Flex>
           <Modal
             title="Chọn số lượng"

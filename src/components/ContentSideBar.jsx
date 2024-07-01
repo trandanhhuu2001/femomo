@@ -9,15 +9,18 @@ import {
   Typography,
 } from "antd";
 import coke from "../assets/coca.png";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ProductContext } from "../context/ProductProvider";
 
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
+};
 function ContentSideBar() {
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
+  const { selectedProducts } = useContext(ProductContext);
+
   const [moneyItems, setMoneyItems] = useState([
     { denomination: 10000, quantity: 0 },
     { denomination: 20000, quantity: 0 },
@@ -86,6 +89,16 @@ function ContentSideBar() {
       <div style={{ marginTop: "20px" }}>
         <h3>Tổng tiền: {formatCurrency(totalAmount)}</h3>
       </div>
+      <List
+        header={<div>Sản phảm đã chọn</div>}
+        bordered
+        dataSource={selectedProducts}
+        renderItem={(product) => (
+          <List.Item>
+            {product.name} - {formatCurrency(product.price)}
+          </List.Item>
+        )}
+      />
     </Card>
   );
 }
