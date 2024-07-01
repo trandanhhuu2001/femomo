@@ -1,6 +1,8 @@
 import { Button, Card, InputNumber, List } from "antd";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ProductContext } from "../context/ProductProvider";
+import { sendProductList } from "../services/ApiService";
+import axios from "axios";
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("vi-VN", {
@@ -36,6 +38,27 @@ function ContentSideBar() {
     updateQuantity(productId, newQuantity);
   };
 
+  const handleBuyProducts = async () => {
+    try {
+      await sendProductList(selectedProducts);
+    } catch (error) {
+      console.error("Lỗi khi gửi danh sách sản phẩm:", error);
+    }
+  };
+  // Sử dụng useEffect để gọi API GET khi component được render
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/product");
+        console.log(response.data); // Cập nhật state products với dữ liệu từ server
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        // Xử lý lỗi nếu có
+      }
+    };
+
+   fetchProducts(); // Gọi hàm fetchProducts khi component được render
+  }, []);
   return (
     <Card>
       <List
@@ -85,7 +108,7 @@ function ContentSideBar() {
         renderItem={(product) => (
           <List.Item>
             {product.name} - {product.quantity} - Tổng tiền:{" "}
-            {product.totalPrice}
+            {formatCurrency(product.totalPrice)}
             <InputNumber
               min={0}
               value={product.quantity}
@@ -94,6 +117,10 @@ function ContentSideBar() {
           </List.Item>
         )}
       />
+      <Button type="text" onClick={handleBuyProducts}>
+        {" "}
+        Mua{" "}
+      </Button>
     </Card>
   );
 }
