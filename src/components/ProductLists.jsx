@@ -15,7 +15,6 @@ function ProductLists() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
-
   const showModal = (product) => {
     setSelectedProduct(product);
     setVisible(true);
@@ -24,7 +23,6 @@ function ProductLists() {
   const handleOk = () => {
     addProduct({ ...selectedProduct, quantity });
     setVisible(false);
-    // Xử lý logic khi người dùng ấn OK
   };
 
   const handleCancel = () => {

@@ -1,14 +1,4 @@
-import {
-  Button,
-  Card,
-  Flex,
-  Image,
-  InputNumber,
-  List,
-  Radio,
-  Typography,
-} from "antd";
-import coke from "../assets/coca.png";
+import { Button, Card, InputNumber, List } from "antd";
 import { useContext, useState } from "react";
 import { ProductContext } from "../context/ProductProvider";
 
@@ -19,8 +9,7 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 function ContentSideBar() {
-  const { selectedProducts } = useContext(ProductContext);
-
+  const { selectedProducts, updateQuantity } = useContext(ProductContext);
   const [moneyItems, setMoneyItems] = useState([
     { denomination: 10000, quantity: 0 },
     { denomination: 20000, quantity: 0 },
@@ -28,18 +17,14 @@ function ContentSideBar() {
     { denomination: 100000, quantity: 0 },
     { denomination: 200000, quantity: 0 },
   ]);
-
   const [totalAmount, setTotalAmount] = useState(0);
-
-  const updateQuantity = (index, newQuantity) => {
+  const updateQuantityMonney = (index, newQuantity) => {
     const newMoneyItems = [...moneyItems];
     newMoneyItems[index].quantity = newQuantity;
     setMoneyItems(newMoneyItems);
-
     // Tính toán tổng tiền
     calculateTotal(newMoneyItems);
   };
-
   const calculateTotal = (items) => {
     let total = 0;
     items.forEach((item) => {
@@ -47,6 +32,10 @@ function ContentSideBar() {
     });
     setTotalAmount(total);
   };
+  const handleChangeQuantity = (productId, newQuantity) => {
+    updateQuantity(productId, newQuantity);
+  };
+
   return (
     <Card>
       <List
@@ -66,18 +55,18 @@ function ContentSideBar() {
                 <Button
                   type="text"
                   disabled={item.quantity <= 0}
-                  onClick={() => updateQuantity(index, item.quantity - 1)}
+                  onClick={() => updateQuantityMonney(index, item.quantity - 1)}
                 >
                   -
                 </Button>
                 <InputNumber
                   min={0}
                   value={item.quantity}
-                  onChange={(value) => updateQuantity(index, value)}
+                  onChange={(value) => updateQuantityMonney(index, value)}
                 />
                 <Button
                   type="text"
-                  onClick={() => updateQuantity(index, item.quantity + 1)}
+                  onClick={() => updateQuantityMonney(index, item.quantity + 1)}
                 >
                   +
                 </Button>
@@ -95,7 +84,13 @@ function ContentSideBar() {
         dataSource={selectedProducts}
         renderItem={(product) => (
           <List.Item>
-            {product.name} - {formatCurrency(product.price)}
+            {product.name} - {product.quantity} - Tổng tiền:{" "}
+            {product.totalPrice}
+            <InputNumber
+              min={0}
+              value={product.quantity}
+              onChange={(value) => handleChangeQuantity(product.id, value)}
+            />
           </List.Item>
         )}
       />
