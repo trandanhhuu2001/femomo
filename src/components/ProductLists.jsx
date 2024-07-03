@@ -6,9 +6,12 @@ import { ProductContext } from "../context/ProductProvider";
 const { Meta } = Card;
 
 const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
-  
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(amount);
+};
+
 function ProductLists() {
   const { addProduct } = useContext(ProductContext);
   const [visible, setVisible] = useState(false);
@@ -38,9 +41,17 @@ function ProductLists() {
       {productData.map((product) => (
         <Card key={product.id} hoverable className="product-card">
           <Image src={product.picture} style={{ width: "80px" }} />
-          <Flex horizontal align="center" justify="center" gap="large" style={{marginTop: "20px"}}>
+          <Flex
+            horizontal
+            align="center"
+            justify="center"
+            gap="large"
+            style={{ marginTop: "20px" }}
+          >
             <Meta title={product.name} />
-            <Button onClick={() => showModal(product)}>Mua | {formatCurrency(product.price)}</Button>
+            <Button onClick={() => showModal(product)}>
+              Mua | {formatCurrency(product.price)}
+            </Button>
           </Flex>
           <Modal
             title="Chọn số lượng"

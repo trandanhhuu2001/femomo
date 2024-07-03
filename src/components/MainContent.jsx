@@ -5,7 +5,7 @@ function MainContent() {
   return (
     <div style={{ flex: 1 }}>
       <Flex vertical gap="2.3rem">
-        <ProductLists/>
+        <ProductLists />
       </Flex>
     </div>
   );

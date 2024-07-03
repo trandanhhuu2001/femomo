@@ -45,20 +45,19 @@ function ContentSideBar() {
       console.error("Lỗi khi gửi danh sách sản phẩm:", error);
     }
   };
-  // Sử dụng useEffect để gọi API GET khi component được render
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/product");
-        console.log(response.data); // Cập nhật state products với dữ liệu từ server
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
-        // Xử lý lỗi nếu có
       }
     };
-
-   fetchProducts(); // Gọi hàm fetchProducts khi component được render
+    fetchProducts();
   }, []);
+
   return (
     <Card>
       <List
