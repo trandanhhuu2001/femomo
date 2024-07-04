@@ -1,4 +1,4 @@
-import { Button, Card, Image, InputNumber, List } from "antd";
+import { Button, Card, Image, InputNumber, List, Modal } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { ProductContext } from "../context/ProductProvider";
 import { sendProductList } from "../services/ApiService";
@@ -12,6 +12,7 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 function ContentSideBar() {
+  const [showModal, setShowModal] = useState(false);
   const { selectedProducts, updateQuantity } = useContext(ProductContext);
   const [moneyItems, setMoneyItems] = useState([
     { denomination: 10000, quantity: 0 },
@@ -21,6 +22,7 @@ function ContentSideBar() {
     { denomination: 200000, quantity: 0 },
   ]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [resultAmount,setResultAmount] = useState(0);
   const updateQuantityMonney = (index, newQuantity) => {
     const newMoneyItems = [...moneyItems];
     newMoneyItems[index].quantity = newQuantity;
@@ -35,15 +37,32 @@ function ContentSideBar() {
     });
     setTotalAmount(total);
   };
+  const calculateResult = (selectedProducts) => {
+    let total = 0;
+    selectedProducts.forEach((item) => {
+      total += item.totalPrice
+    })
+    return total
+  }
+  useEffect(() => {
+    // Số tiền dư
+    const remainingBalance = totalAmount - calculateResult(selectedProducts);
+    setResultAmount(remainingBalance);
+  }, [selectedProducts, totalAmount]);
+
   const handleChangeQuantity = (productId, newQuantity) => {
     updateQuantity(productId, newQuantity);
   };
 
   const handleBuyProducts = async () => {
-    try {
-      await sendProductList(selectedProducts);
-    } catch (error) {
-      console.error("Lỗi khi gửi danh sách sản phẩm:", error);
+    if(resultAmount >= 0) {
+      try {
+        await sendProductList(selectedProducts);
+      } catch (error) {
+        console.error("Lỗi khi gửi danh sách sản phẩm:", error);
+      }
+    }else{
+      setShowModal(true);
     }
   };
 
@@ -98,8 +117,8 @@ function ContentSideBar() {
           </List.Item>
         )}
       />
-      <div style={{ marginTop: "20px" }}>
-        <h3>Tổng tiền: {formatCurrency(totalAmount)}</h3>
+      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+        <h3>Số tiền đã nạp: {formatCurrency(totalAmount)}</h3>
       </div>
       <List
         header={<div>Sản phảm đã chọn</div>}
@@ -107,8 +126,8 @@ function ContentSideBar() {
         dataSource={selectedProducts}
         renderItem={(product) => (
           <List.Item>
-            {product.name} - {product.quantity} - Tổng tiền:{" "}
-            {formatCurrency(product.totalPrice)}
+            {product.name} - {product.quantity} - Tổng tiền: {formatCurrency(product.totalPrice)} - {" "}
+
             <InputNumber
               min={0}
               value={product.quantity}
@@ -117,10 +136,25 @@ function ContentSideBar() {
           </List.Item>
         )}
       />
+      
+      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+        <h3>Tổng số tiền sản phẩm: {formatCurrency(calculateResult(selectedProducts))}</h3>
+      </div>
+      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+        <h3>Số dư: {formatCurrency(resultAmount)}</h3>
+      </div>
       <Button type="primary" style={{marginTop: 12}} onClick={handleBuyProducts}>
         {" "}
         Mua{" "}
       </Button>
+      <Modal
+        title="Thông báo"
+        open={showModal}
+        onOk={() => setShowModal(false)}
+        onCancel={() => setShowModal(false)}
+      >
+        <p>Bạn không đủ tiền để thực hiện thanh toán.Vui lòng nạp thêm tiền !</p>
+      </Modal>
     </Card>
   );
 }
