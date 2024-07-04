@@ -1,8 +1,9 @@
-import { Button, Card, InputNumber, List } from "antd";
+import { Button, Card, Image, InputNumber, List } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { ProductContext } from "../context/ProductProvider";
 import { sendProductList } from "../services/ApiService";
 import axios from "axios";
+
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("vi-VN", {
@@ -116,7 +117,7 @@ function ContentSideBar() {
           </List.Item>
         )}
       />
-      <Button type="text" onClick={handleBuyProducts}>
+      <Button type="primary" style={{marginTop: 12}} onClick={handleBuyProducts}>
         {" "}
         Mua{" "}
       </Button>
